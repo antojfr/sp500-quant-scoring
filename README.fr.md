@@ -31,9 +31,11 @@ La stratégie **long-only (top 20 %)** surperforme le S&P 500 en rendement absol
 
 ## Ce que ce projet démontre
 
-- **Feature engineering financier** : 24 features (momentum, risque, technique, macro, fondamentaux) codées **à la main**.
+- **Tout codé from scratch — aucune boîte noire pour la logique cœur :**
+  - Les **24 features** (RSI, MACD, beta 12 mois, volatilité, max drawdown, moyennes mobiles…) calculées manuellement à partir des prix bruts — **sans TA-Lib**.
+  - La **winsorization** bâtie sur une **fonction quantile codée à la main** (interpolation linéaire).
+  - Une **régression logistique régularisée (L2)** implémentée from scratch — sigmoïde, coût log-loss, gradient, descente de gradient vectorisée — **validée** en reproduisant `scikit-learn` à la 4ᵉ décimale (AUC 0.5161 vs 0.516).
 - **Rigueur temporelle** : aucune fuite d'information (walk-forward validation, normalisation *cross-section*, standardisation *fit sur train uniquement*).
-- **Implémentation from scratch** : régression logistique régularisée (L2) codée à la main (descente de gradient vectorisée), **validée** en reproduisant `scikit-learn` à la 4ᵉ décimale.
 - **Backtest professionnel** : Sharpe, alpha/beta (CAPM), max drawdown, turnover, coûts de transaction, variante long-short market-neutral.
 - **Honnêteté intellectuelle** : distinction beta / alpha, tests de significativité, biais documentés.
 
@@ -88,6 +90,24 @@ Train 2015→2023 → Test 2024
 - Portefeuille = **top 20 %** des scores chaque mois, equal-weight.
 - Comparaison à **deux** benchmarks : le S&P 500 (cap-weighted) **et** l'univers equal-weight (pour isoler le stock-picking pur du biais equal-weight).
 - Variante **long-short** (long top 20 % / short bottom 20 %) : beta résiduel de 0.53, alpha non significatif (t = 0.58).
+
+---
+
+## Résultats détaillés du backtest (out-of-sample 2019–2024)
+
+| Métrique | Long-only (Top 20 %) | Long-Short (top − bottom 20 %) |
+|---|---|---|
+| Rendement annualisé (brut) | 27.3 % | 11.5 % |
+| Rendement annualisé (net de coûts) | **26.0 %** | — |
+| Sharpe ratio (brut / net) | 0.97 / **0.93** | 0.70 |
+| Max Drawdown | −29.5 % | — |
+| Turnover mensuel | 42.7 % | — |
+| Coûts de transaction (hypothèse 10 bps/trade) | ~1.0 % / an | — |
+| Beta vs S&P 500 | 1.33 | **0.53** |
+| Alpha annualisé vs S&P 500 | +4.8 % (t = 1.12) | +3.1 % (t = 0.58) |
+| Alpha annualisé vs univers equal-weight | +2.5 % (t = 0.83) | — |
+
+> **Aucun alpha n'est statistiquement significatif** (tous |t| < 2). La performance absolue provient surtout de l'exposition au marché (beta), pas de la sélection de titres — un résultat réaliste et honnêtement rapporté.
 
 ---
 

@@ -31,9 +31,11 @@ The **long-only (top 20%)** strategy outperforms the S&P 500 in absolute return,
 
 ## What this project demonstrates
 
-- **Financial feature engineering**: 24 features (momentum, risk, technical, macro, fundamentals) computed **by hand**.
+- **Everything coded from scratch — no black-box for the core logic:**
+  - The **24 features** (RSI, MACD, 12-month beta, volatility, max drawdown, moving averages…) computed manually from raw prices — **no TA-Lib**.
+  - **Winsorization** built on a **hand-coded quantile function** (linear interpolation).
+  - A **regularized (L2) logistic regression** implemented from scratch — sigmoid, log-loss cost, gradient, vectorized gradient descent — **validated** by matching `scikit-learn` to the 4th decimal (AUC 0.5161 vs 0.516).
 - **Temporal rigor**: no information leakage (walk-forward validation, *cross-sectional* normalization, *train-only* standardization).
-- **From-scratch implementation**: regularized (L2) logistic regression coded by hand (vectorized gradient descent), **validated** by matching `scikit-learn` to the 4th decimal.
 - **Professional backtest**: Sharpe, alpha/beta (CAPM), max drawdown, turnover, transaction costs, market-neutral long-short variant.
 - **Intellectual honesty**: beta/alpha decomposition, significance testing, documented biases.
 
@@ -88,6 +90,24 @@ Train 2015→2023 → Test 2024
 - Portfolio = **top 20%** of scores each month, equal-weighted.
 - Compared against **two** benchmarks: the S&P 500 (cap-weighted) **and** the equal-weight universe (to isolate pure stock-picking from the equal-weight bias).
 - **Long-short** variant (long top 20% / short bottom 20%): residual beta of 0.53, non-significant alpha (t = 0.58).
+
+---
+
+## Detailed backtest results (out-of-sample 2019–2024)
+
+| Metric | Long-only (Top 20%) | Long-Short (top − bottom 20%) |
+|---|---|---|
+| Annualized return (gross) | 27.3% | 11.5% |
+| Annualized return (net of costs) | **26.0%** | — |
+| Sharpe ratio (gross / net) | 0.97 / **0.93** | 0.70 |
+| Max Drawdown | −29.5% | — |
+| Monthly turnover | 42.7% | — |
+| Transaction costs (assumed 10 bps/trade) | ~1.0% / year | — |
+| Beta vs S&P 500 | 1.33 | **0.53** |
+| Annualized alpha vs S&P 500 | +4.8% (t = 1.12) | +3.1% (t = 0.58) |
+| Annualized alpha vs equal-weight universe | +2.5% (t = 0.83) | — |
+
+> **No alpha is statistically significant** (all |t| < 2). Absolute performance is driven mainly by market exposure (beta), not by stock selection — a realistic and honestly reported outcome.
 
 ---
 
