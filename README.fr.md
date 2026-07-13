@@ -23,6 +23,10 @@ La stratégie **long-only (top 20 %)** surperforme le S&P 500 en rendement absol
 
 **Conclusion assumée** : sur des marchés quasi-efficients, un signal ML faible (AUC ≈ 0.52) génère du rendement, mais pas d'alpha robuste après contrôle du risque de marché. Ce résultat — obtenu sans biais méthodologique — est le cœur de la démarche.
 
+![Performance cumulée : Top 20% vs S&P 500 vs univers equal-weight](assets/equity_curve.png)
+
+*Performance cumulée out-of-sample (2019–2024). Le portefeuille Top 20% surperforme les deux benchmarks en absolu — mais l'analyse alpha/beta montre que l'essentiel de l'excès provient d'une exposition marché plus élevée (beta 1.33), pas d'un alpha de sélection significatif.*
+
 ---
 
 ## Ce que ce projet démontre
@@ -76,6 +80,10 @@ Train 2015→2023 → Test 2024
 
 > Enseignement : sur données à faible ratio signal/bruit, le modèle **linéaire** domine les modèles non-linéaires plus complexes, qui ajoutent surtout de la variance. Le signal cross-sectionnel exploitable est essentiellement **linéaire**.
 
+![Coefficients de la régression logistique moyennés sur les folds](assets/feature_importance.png)
+
+*Coefficients de la régression logistique moyennés sur les folds. Les signaux les plus forts sont économiquement interprétables : momentum long terme (`price_vs_ma200`, +), facteur **Size** (`market_cap`, − → les small caps surperforment), forte sensibilité au marché (`beta_12m`, +), et mean-reversion court terme (`rsi_14`, −).*
+
 ### 5. Backtest
 - Portefeuille = **top 20 %** des scores chaque mois, equal-weight.
 - Comparaison à **deux** benchmarks : le S&P 500 (cap-weighted) **et** l'univers equal-weight (pour isoler le stock-picking pur du biais equal-weight).
@@ -91,6 +99,7 @@ python-projet-sp500/
 │   ├── raw/                          # CSV bruts (prix, volumes, dividendes, VIX, taux…)
 │   └── processed/
 │       └── features_with_label.csv   # dataset final (66 396 × 25) — régénéré par le notebook
+├── assets/                           # figures utilisées dans le README
 ├── collect_data_projet_sp500.ipynb   # collecte des données
 ├── sp500_ml_project.ipynb            # pipeline principal (features → modèles → backtest)
 └── README.md
